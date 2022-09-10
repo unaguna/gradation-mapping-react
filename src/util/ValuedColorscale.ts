@@ -61,8 +61,6 @@ class ValuedColorscale {
   private readonly size: number;
   /** 等値線の値。昇順。 */
   readonly contourValues: number[];
-  /** 使用する色のレベル。昇順ですべて0以上1以下。 */
-  readonly colorBalance: number[];
   /** 使用するすべての色を明示するcolorscale */
   readonly fullColorscale: [number, Color][];
 
@@ -73,8 +71,8 @@ class ValuedColorscale {
     this.size = size;
 
     this.contourValues = ValuedColorscale.calcContourValues(start, end, size);
-    this.colorBalance = ValuedColorscale.calcColorBalance(this.contourValues);
-    this.fullColorscale = ValuedColorscale.calcFullColorscale(this.colorscale, this.colorBalance);
+    const colorBalance = ValuedColorscale.calcColorBalance(this.contourValues);
+    this.fullColorscale = ValuedColorscale.calcFullColorscale(this.colorscale, colorBalance);
   }
 
   private static calcContourValues(start: number, end: number, size: number): number[] {
@@ -87,6 +85,15 @@ class ValuedColorscale {
     return values;
   }
 
+  /**
+   * 使用する色のレベルを算出する。
+   * 
+   * 等値線で挟まれる各領域のレベルを算出する。
+   * レベルは0以上1以下の値であり、各領域に対応する数値に比例する。
+   * 
+   * @param contourValues 等値線の値。昇順であること。
+   * @returns 使用する色のレベル。昇順ですべて0以上1以下。
+   */
   private static calcColorBalance(contourValues: number[]): number[] {
     if (contourValues.length <= 0) return [0.0];
 
