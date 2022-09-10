@@ -57,13 +57,16 @@ function weightedMean(base: Color, other: Color, baseWeight: number): Color {
 }
 
 export const App: React.FC = () => {
-  const start = 0;
-  const end = 1000;
-  const size = 100;
+  const start = 2;
+  const end = 18;
+  const size = 2;
   const colorscale: [number, string][] = [
-    [0.0, "red"],
-    [0.2, "yellow"],
-    [1.0, "blue"],
+    [0, "rgb(166,206,227)"],
+    [0.25, "rgb(31,120,180)"],
+    [0.45, "rgb(178,223,138)"],
+    [0.65, "rgb(51,160,44)"],
+    [0.85, "rgb(251,154,153)"],
+    [1, "rgb(227,26,28)"],
   ];
   const colorscaleObj: [number, Color][] = colorscale.map(([level, color]) => [level, Color(color)]);
 
@@ -99,6 +102,6 @@ export const App: React.FC = () => {
   }, colorBalance);
 
   return <div>
-    <Colorbar colors={colors.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ height: "600px" }} />
+    <Colorbar values={contourValues} colors={colors.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ height: "600px" }} />
   </div>
 }

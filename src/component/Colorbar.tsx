@@ -1,30 +1,45 @@
 import { Stack } from '@mui/material';
 import { SxProps } from '@mui/material/styles';
 import Color from 'color';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 
 interface ColorbarProps {
   colors: { key?: string, color: string | Color, size: number }[];
+  values: (string | number)[];
   sx?: SxProps;
 }
 
 const Colorbar: React.FC<ColorbarProps> = (props) => {
   const {
     colors,
-    sx,
+    values: values_,
+    sx: sx_,
   } = props;
+
+  const sx: SxProps = useMemo(() => Object.assign({}, sx_, {
+    "& .colorbar__value": {
+      display: "block",
+      position: "absolute",
+      top: "-1ex",
+      right: 0,
+    },
+  }), [sx_])
+
+  const values = [null, ...values_];
 
   return (
     <Stack direction="column" sx={sx}>
-      {colors.map(({ key, color: color_, size }) => {
+      {colors.map(({ key, color: color_, size }, i) => {
         const color = typeof color_ === "string" ? color_ : color_.string();
         return (<div
           key={key ?? `color-${color}`}
           style={{
+            position: "relative",
             backgroundColor: color,
             flex: size,
           }}>
+          <span className="colorbar__value">{values[i]}</span>
         </div>);
       })}
     </Stack>
