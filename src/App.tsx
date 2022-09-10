@@ -1,5 +1,6 @@
+import { Stack, TextField } from '@mui/material';
 import Color from 'color';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Colorbar from './component/Colorbar';
 
 /**
@@ -57,11 +58,12 @@ function weightedMean(base: Color, other: Color, baseWeight: number): Color {
 }
 
 export const App: React.FC = () => {
-  const start_ = 2;
-  const end_ = 18;
-  const size = 2;
-  const start = start_ <= end_ ? start_ : end_;
-  const end = start_ <= end_ ? end_ : start_;
+  const [start, setStart] = useState(2);
+  const [end, setEnd] = useState(18);
+  const [size, setSize] = useState(2);
+
+  const startN = start <= end ? start : end;
+  const endN = start <= end ? end : start;
   const colorscale: [number, string][] = [
     [0, "rgb(166,206,227)"],
     [0.25, "rgb(31,120,180)"],
@@ -76,12 +78,12 @@ export const App: React.FC = () => {
   const contourValues: number[] = useMemo(() => {
     const values = [];
 
-    for (let v = start; v < end + size * 1.0E-3; v += size) {
+    for (let v = startN; v < endN + size * 1.0E-3; v += size) {
       values.push(v);
     }
 
     return values;
-  }, [start, end, size]);
+  }, [startN, endN, size]);
 
 
   // 使用する色のレベル。昇順ですべて0以上1以下。
@@ -89,7 +91,7 @@ export const App: React.FC = () => {
     if (contourValues.length <= 0) return [0.0];
 
     return Array(contourValues.length + 1).fill(0).map((_, i) => i / contourValues.length);
-  }, contourValues);
+  }, [contourValues]);
 
   const colors: [number, Color][] = useMemo(() => {
     return colorBalance.map(level => {
@@ -101,9 +103,32 @@ export const App: React.FC = () => {
       else if (prev[0] == next[0]) return [level, prev[1]];
       else return [level, weightedMean(prev[1], next[1], (next[0] - level) / (next[0] - prev[0]))]
     });
-  }, colorBalance);
+  }, [colorBalance]);
 
-  return <div>
-    <Colorbar values={contourValues} colors={colors.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ height: "600px" }} />
-  </div>
+  return <Stack direction="row" spacing={1}>
+    <Stack direction="column">
+      <TextField
+        value={start}
+        onChange={e => setStart(Number.parseFloat(e.target.value))}
+        label="start"
+        variant="standard"
+        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+      />
+      <TextField
+        value={end}
+        onChange={e => setEnd(Number.parseFloat(e.target.value))}
+        label="end"
+        variant="standard"
+        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+      />
+      <TextField
+        value={size}
+        onChange={e => setSize(Number.parseFloat(e.target.value))}
+        label="size"
+        variant="standard"
+        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+      />
+    </Stack>
+    <Colorbar values={contourValues} colors={colors.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
+  </Stack>
 }
