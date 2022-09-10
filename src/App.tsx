@@ -22,16 +22,16 @@ export const App: React.FC = () => {
   const [colorscale, setColorscale] = useState(() => JSON.stringify(defaultColorscale))
 
   const [reversescaleN, setReversescaleN] = useState(reversescale);
-  const [startN, setStartN] = useState(() => parseStart(start) <= parseEnd(end) ? parseStart(start) : parseEnd(end));
-  const [endN, setEndN] = useState(() => parseStart(start) <= parseEnd(end) ? parseEnd(end) : parseStart(start));
-  const [sizeN, setSizeN] = useState(() => parseSize(size));
+  const [startN, setStartN] = useState(0);
+  const [endN, setEndN] = useState(0);
+  const [sizeN, setSizeN] = useState(2);
   const [colorscaleN, setColorscaleN] = useState<[number, string][]>(() => parseJsonOrUndefined(colorscale));
 
   const valuedColorScale: ValuedColorscale =
     useMemo(() => new ValuedColorscale(colorscaleN, startN, endN, sizeN, reversescaleN), [colorscaleN, startN, endN, sizeN, reversescaleN]);
 
-  const [deltaStartN, setDeltaStartN] = useState(() => parseDeltaStart(deltaStart));
-  const [deltaEndN, setDeltaEndN] = useState(() => parseDeltaEnd(deltaEnd));
+  const [deltaStartN, setDeltaStartN] = useState(0);
+  const [deltaEndN, setDeltaEndN] = useState(0);
 
   const newValuedColorScale: ValuedColorscale =
     useMemo(() => valuedColorScale.subsetByContourIndex(deltaStartN, valuedColorScale.contourValues.length - 1 - deltaEndN), [valuedColorScale, deltaStartN, deltaEndN]);
@@ -53,9 +53,6 @@ export const App: React.FC = () => {
     setSizeN(_size);
     setColorscaleN(JSON.parse(colorscale));
     setReversescaleN(reversescale);
-
-    setDeltaStartN(parseDeltaStart(deltaStart));
-    setDeltaEndN(parseDeltaEnd(deltaEnd));
   };
 
   /** 変換ボタンをクリックした際の処理 */
