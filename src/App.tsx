@@ -1,4 +1,4 @@
-import { Stack, TextField } from '@mui/material';
+import { Button, Stack, TextField } from '@mui/material';
 import Color from 'color';
 import React, { useMemo, useState } from 'react';
 import Colorbar from './component/Colorbar';
@@ -58,12 +58,14 @@ function weightedMean(base: Color, other: Color, baseWeight: number): Color {
 }
 
 export const App: React.FC = () => {
-  const [start, setStart] = useState(2);
-  const [end, setEnd] = useState(18);
-  const [size, setSize] = useState(2);
+  const [start, setStart] = useState("2");
+  const [end, setEnd] = useState("18");
+  const [size, setSize] = useState("2");
 
-  const startN = start <= end ? start : end;
-  const endN = start <= end ? end : start;
+  const [startN, setStartN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(start) : Number.parseFloat(end));
+  const [endN, setEndN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(end) : Number.parseFloat(start));
+  const [sizeN, setSizeN] = useState(Number.parseFloat(size));
+
   const colorscale: [number, string][] = [
     [0, "rgb(166,206,227)"],
     [0.25, "rgb(31,120,180)"],
@@ -78,12 +80,12 @@ export const App: React.FC = () => {
   const contourValues: number[] = useMemo(() => {
     const values = [];
 
-    for (let v = startN; v < endN + size * 1.0E-3; v += size) {
+    for (let v = startN; v < endN + sizeN * 1.0E-3; v += sizeN) {
       values.push(v);
     }
 
     return values;
-  }, [startN, endN, size]);
+  }, [startN, endN, sizeN]);
 
 
   // 使用する色のレベル。昇順ですべて0以上1以下。
@@ -105,29 +107,41 @@ export const App: React.FC = () => {
     });
   }, [colorBalance]);
 
+  /** 描画ボタンをクリックした際の処理 */
+  const handleClickCalcButton = () => {
+    const _start = Number.parseFloat(start);
+    const _end = Number.parseFloat(end);
+    const _size = Number.parseFloat(size);
+
+    setStartN(_start <= _end ? _start : _end);
+    setEndN(_start <= _end ? _end : _start);
+    setSizeN(_size);
+  };
+
   return <Stack direction="row" spacing={1}>
     <Stack direction="column">
       <TextField
         value={start}
-        onChange={e => setStart(Number.parseFloat(e.target.value))}
+        onChange={e => setStart(e.target.value)}
         label="start"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
       />
       <TextField
         value={end}
-        onChange={e => setEnd(Number.parseFloat(e.target.value))}
+        onChange={e => setEnd(e.target.value)}
         label="end"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
       />
       <TextField
         value={size}
-        onChange={e => setSize(Number.parseFloat(e.target.value))}
+        onChange={e => setSize(e.target.value)}
         label="size"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
       />
+      <Button variant="contained" onClick={handleClickCalcButton}>描画</Button>
     </Stack>
     <Colorbar values={contourValues} colors={colors.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
   </Stack>
