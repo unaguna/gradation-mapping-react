@@ -7,6 +7,8 @@ export const App: React.FC = () => {
   const [start, setStart] = useState("2");
   const [end, setEnd] = useState("18");
   const [size, setSize] = useState("2");
+  const [deltaStart, setDeltaStart] = useState("1");
+  const [deltaEnd, setDeltaEnd] = useState("1");
 
   const [startN, setStartN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(start) : Number.parseFloat(end));
   const [endN, setEndN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(end) : Number.parseFloat(start));
@@ -24,11 +26,11 @@ export const App: React.FC = () => {
   const valuedColorScale: ValuedColorscale =
     useMemo(() => new ValuedColorscale(colorscale, startN, endN, sizeN), [colorscale, startN, endN, sizeN]);
 
-  const newStartIndex = valuedColorScale.contourValues.length >= 1 ? 1 : 0;
-  const newEndIndex = valuedColorScale.contourValues.length >= 2 ? valuedColorScale.contourValues.length - 2 : 0;
+  const [deltaStartN, setDeltaStartN] = useState(Number.parseInt(deltaStart));
+  const [deltaEndN, setDeltaEndN] = useState(Number.parseInt(deltaEnd));
 
   const newValuedColorScale: ValuedColorscale =
-    useMemo(() => valuedColorScale.subsetByContourIndex(newStartIndex, newEndIndex), [valuedColorScale, newStartIndex, newEndIndex]);
+    useMemo(() => valuedColorScale.subsetByContourIndex(deltaStartN, valuedColorScale.contourValues.length - 1 - deltaEndN), [valuedColorScale, deltaStartN, deltaEndN]);
 
   /** 描画ボタンをクリックした際の処理 */
   const handleClickCalcButton = () => {
@@ -39,6 +41,12 @@ export const App: React.FC = () => {
     setStartN(_start <= _end ? _start : _end);
     setEndN(_start <= _end ? _end : _start);
     setSizeN(_size);
+  };
+
+  /** 変換ボタンをクリックした際の処理 */
+  const handleClickTransButton = () => {
+    setDeltaStartN(Number.parseInt(deltaStart));
+    setDeltaEndN(Number.parseInt(deltaEnd));
   };
 
   return <Stack direction="row" spacing={1}>
@@ -67,6 +75,23 @@ export const App: React.FC = () => {
       <Button variant="contained" onClick={handleClickCalcButton}>描画</Button>
     </Stack>
     <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
+    <Stack direction="column">
+      <TextField
+        value={deltaStart}
+        onChange={e => setDeltaStart(e.target.value)}
+        label="start側をnメモリ減らす"
+        variant="standard"
+        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
+      />
+      <TextField
+        value={deltaEnd}
+        onChange={e => setDeltaEnd(e.target.value)}
+        label="end側をnメモリ減らす"
+        variant="standard"
+        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
+      />
+      <Button variant="contained" onClick={handleClickTransButton}>変換</Button>
+    </Stack>
     <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
   </Stack>
 }
