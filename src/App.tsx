@@ -24,6 +24,12 @@ export const App: React.FC = () => {
   const valuedColorScale: ValuedColorscale =
     useMemo(() => new ValuedColorscale(colorscale, startN, endN, sizeN), [colorscale, startN, endN, sizeN]);
 
+  const newStartIndex = valuedColorScale.contourValues.length >= 1 ? 1 : 0;
+  const newEndIndex = valuedColorScale.contourValues.length >= 2 ? valuedColorScale.contourValues.length - 2 : 0;
+
+  const newValuedColorScale: ValuedColorscale =
+    useMemo(() => valuedColorScale.subsetByContourIndex(newStartIndex, newEndIndex), [valuedColorScale, newStartIndex, newEndIndex]);
+
   /** 描画ボタンをクリックした際の処理 */
   const handleClickCalcButton = () => {
     const _start = Number.parseFloat(start);
@@ -61,5 +67,6 @@ export const App: React.FC = () => {
       <Button variant="contained" onClick={handleClickCalcButton}>描画</Button>
     </Stack>
     <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
+    <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
   </Stack>
 }
