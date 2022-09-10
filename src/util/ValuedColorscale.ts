@@ -76,11 +76,6 @@ class ValuedColorscale {
   }
 
   subsetByContourIndex(startIndex: number, endIndex: number): ValuedColorscale {
-    if (startIndex < 0 || this.contourValues.length <= startIndex)
-      throw RangeError(`\`startIndex\` must be between 0 and ${this.contourValues.length - 1}`);
-    if (endIndex < 0 || this.contourValues.length <= endIndex)
-      throw RangeError(`\`endIndex\` must be between 0 and ${this.contourValues.length - 1}`);
-
     // startIndex <= endIndex となるように正規化
     if (startIndex > endIndex) {
       const tmp = startIndex;
@@ -88,21 +83,29 @@ class ValuedColorscale {
       endIndex = tmp;
     }
 
-    const start = this.contourValues[startIndex];
-    const end = this.contourValues[endIndex];
+    const start = this.start + startIndex * this.size;
+    const end = this.start + endIndex * this.size;
 
-    const startEdgeColor = this.fullColorscale[startIndex];
-    const endEdgeColor = this.fullColorscale[endIndex + 1];
+    const newFullColorscaleLength = 2 + endIndex - startIndex;
 
-    // 新しいcolorscaleを作成。ただし、レベルの正規化はしていない状態。
-    const newColorscaleInnerWithOldLevel = this.colorscale.filter(([level, _]) => startEdgeColor[0] < level && level < endEdgeColor[0]);
-    const newColorscaleWithOldLevel = [startEdgeColor, ...newColorscaleInnerWithOldLevel, endEdgeColor];
+    const newColorscaleInner: [number, Color][] = startIndex !== endIndex
+      ? this.colorscale
+        .map<[number, Color]>(([level, c]) => [(level * (this.fullColorscale.length - 1) - startIndex) / (newFullColorscaleLength - 1), c])
+        .filter(([level, _]) => 0 < level && level < 1)
+      : [];
 
-    /** レベルを0から1に正規化する関数 */
-    const levelMap = (oldLevel: number) => (oldLevel - startEdgeColor[0]) / (endEdgeColor[0] - startEdgeColor[0]);
+    const startEdgeColor: [number, Color] = startIndex < 0
+      ? [0.0, this.fullColorscale[0][1]]
+      : startIndex >= this.contourValues.length
+        ? [0.0, this.fullColorscale[this.contourValues.length][1]]
+        : [0.0, this.fullColorscale[startIndex][1]];
+    const endEdgeColor: [number, Color] = endIndex < 0
+      ? [1.0, this.fullColorscale[0][1]]
+      : endIndex >= this.contourValues.length
+        ? [1.0, this.fullColorscale[this.contourValues.length][1]]
+        : [1.0, this.fullColorscale[endIndex + 1][1]];
 
-    // レベルを0から1に正規化する。
-    const newColorscale: [number, Color][] = newColorscaleWithOldLevel.map(([l, c]) => [levelMap(l), c]);
+    const newColorscale: [number, Color][] = [startEdgeColor, ...newColorscaleInner, endEdgeColor];
 
     return new ValuedColorscale(newColorscale, start, end, this.size);
   }

@@ -33,7 +33,7 @@ const Colorbar: React.FC<ColorbarProps> = (props) => {
       {colors.map(({ key, color: color_, size }, i) => {
         const color = typeof color_ === "string" ? color_ : color_.string();
         return (<div
-          key={key ?? `color-${color}`}
+          key={key ?? `color-${i}`}
           style={{
             position: "relative",
             backgroundColor: color,
