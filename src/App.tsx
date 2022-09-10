@@ -92,6 +92,32 @@ export const App: React.FC = () => {
       />
       <Button variant="contained" onClick={handleClickTransButton}>変換</Button>
     </Stack>
+    <Stack direction="column">
+      <TextField
+        value={newValuedColorScale.start}
+        label="start"
+        variant="standard"
+        InputProps={{
+          readOnly: true,
+        }}
+      />
+      <TextField
+        value={newValuedColorScale.end}
+        label="end"
+        variant="standard"
+        InputProps={{
+          readOnly: true,
+        }}
+      />
+      <TextField
+        value={newValuedColorScale.size}
+        label="size"
+        variant="standard"
+        InputProps={{
+          readOnly: true,
+        }}
+      />
+    </Stack>
     <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
   </Stack>
 }

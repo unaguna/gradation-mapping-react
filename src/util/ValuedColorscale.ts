@@ -56,9 +56,9 @@ function weightedMean(base: Color, other: Color, baseWeight: number): Color {
 
 class ValuedColorscale {
   private readonly colorscale: [number, Color][];
-  private readonly start: number;
-  private readonly end: number;
-  private readonly size: number;
+  readonly start: number;
+  readonly end: number;
+  readonly size: number;
   /** 等値線の値。昇順。 */
   readonly contourValues: number[];
   /** 使用するすべての色を明示するcolorscale */
