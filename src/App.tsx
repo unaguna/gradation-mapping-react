@@ -1,4 +1,4 @@
-import { Button, Paper, Stack, TextField } from '@mui/material';
+import { Button, Checkbox, FormControlLabel, Paper, Stack, TextField } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import Colorbar from './component/Colorbar';
 import ValuedColorscale from './util/ValuedColorscale';
@@ -16,10 +16,12 @@ export const App: React.FC = () => {
   const [start, setStart] = useState("2");
   const [end, setEnd] = useState("18");
   const [size, setSize] = useState("2");
+  const [reversescale, setReversescale] = useState(false);
   const [deltaStart, setDeltaStart] = useState("1");
   const [deltaEnd, setDeltaEnd] = useState("1");
   const [colorscale, setColorscale] = useState(JSON.stringify(defaultColorscale))
 
+  const [reversescaleN, setReversescaleN] = useState(reversescale);
   const [startN, setStartN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(start) : Number.parseFloat(end));
   const [endN, setEndN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(end) : Number.parseFloat(start));
   const [sizeN, setSizeN] = useState(Number.parseFloat(size));
@@ -44,6 +46,7 @@ export const App: React.FC = () => {
     setEndN(_start <= _end ? _end : _start);
     setSizeN(_size);
     setColorscaleN(JSON.parse(colorscale));
+    setReversescaleN(reversescale);
   };
 
   /** 変換ボタンをクリックした際の処理 */
@@ -85,9 +88,10 @@ export const App: React.FC = () => {
             multiline
             rows={8}
           />
+          <FormControlLabel control={<Checkbox checked={reversescale} onChange={e => setReversescale(e.target.checked)} />} label="reversescale" />
           <Button variant="contained" onClick={handleClickCalcButton}>{"(1) 変換前の設定を反映"}</Button>
         </Stack>
-        <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+        <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.contourColors(reversescaleN).map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
       </Stack>
     </Paper>
     <Stack direction="column">
@@ -144,8 +148,16 @@ export const App: React.FC = () => {
             multiline
             rows={8}
           />
+          <TextField
+            value={String(reversescaleN)}
+            label="reversescale"
+            variant="standard"
+            InputProps={{
+              readOnly: true,
+            }}
+          />
         </Stack>
-        <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+        <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.contourColors(reversescaleN).map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
       </Stack>
     </Paper>
   </Stack>

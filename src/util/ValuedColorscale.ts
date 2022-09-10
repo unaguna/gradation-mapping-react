@@ -75,6 +75,22 @@ class ValuedColorscale {
     this.fullColorscale = ValuedColorscale.calcFullColorscale(this.colorscale, colorBalance);
   }
 
+  /**
+   * 等値線の間を塗る色を取得する。
+   * 
+   * @param reverse trueの場合、順序を反転する
+   * @returns 各等値線間を塗る色からなる配列
+   */
+  contourColors(reverse?: boolean): Color[] {
+    const colors = this.fullColorscale.map(([_, c]) => c);
+
+    if (reverse) {
+      return colors.reverse();
+    } else {
+      return colors;
+    }
+  }
+
   subsetByContourIndex(startIndex: number, endIndex: number): ValuedColorscale {
     // startIndex <= endIndex となるように正規化
     if (startIndex > endIndex) {
