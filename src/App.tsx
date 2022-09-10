@@ -52,16 +52,16 @@ export const App: React.FC = () => {
   return <Stack direction="row" spacing={1}>
     <Stack direction="column">
       <TextField
-        value={start}
-        onChange={e => setStart(e.target.value)}
-        label="start"
+        value={end}
+        onChange={e => setEnd(e.target.value)}
+        label="end"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
       />
       <TextField
-        value={end}
-        onChange={e => setEnd(e.target.value)}
-        label="end"
+        value={start}
+        onChange={e => setStart(e.target.value)}
+        label="start"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
       />
@@ -77,16 +77,16 @@ export const App: React.FC = () => {
     <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
     <Stack direction="column">
       <TextField
-        value={deltaStart}
-        onChange={e => setDeltaStart(e.target.value)}
-        label="start側をnメモリ減らす"
+        value={deltaEnd}
+        onChange={e => setDeltaEnd(e.target.value)}
+        label="end側をnメモリ減らす"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
       />
       <TextField
-        value={deltaEnd}
-        onChange={e => setDeltaEnd(e.target.value)}
-        label="end側をnメモリ減らす"
+        value={deltaStart}
+        onChange={e => setDeltaStart(e.target.value)}
+        label="start側をnメモリ減らす"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
       />
@@ -94,16 +94,16 @@ export const App: React.FC = () => {
     </Stack>
     <Stack direction="column">
       <TextField
-        value={newValuedColorScale.start}
-        label="start"
+        value={newValuedColorScale.end}
+        label="end"
         variant="standard"
         InputProps={{
           readOnly: true,
         }}
       />
       <TextField
-        value={newValuedColorScale.end}
-        label="end"
+        value={newValuedColorScale.start}
+        label="start"
         variant="standard"
         InputProps={{
           readOnly: true,
