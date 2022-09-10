@@ -3,28 +3,30 @@ import React, { useMemo, useState } from 'react';
 import Colorbar from './component/Colorbar';
 import ValuedColorscale from './util/ValuedColorscale';
 
+const defaultColorscale: [number, string][] = [
+  [0, "rgb(0,0,131)"],
+  [0.2, "rgb(0,60,170)"],
+  [0.4, "rgb(5,255,255)"],
+  [0.6, "rgb(255,255,0)"],
+  [0.8, "rgb(255,0,0)"],
+  [1, "rgb(128,0,0)"],
+];
+
 export const App: React.FC = () => {
   const [start, setStart] = useState("2");
   const [end, setEnd] = useState("18");
   const [size, setSize] = useState("2");
   const [deltaStart, setDeltaStart] = useState("1");
   const [deltaEnd, setDeltaEnd] = useState("1");
+  const [colorscale, setColorscale] = useState(JSON.stringify(defaultColorscale))
 
   const [startN, setStartN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(start) : Number.parseFloat(end));
   const [endN, setEndN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(end) : Number.parseFloat(start));
   const [sizeN, setSizeN] = useState(Number.parseFloat(size));
-
-  const colorscale: [number, string][] = [
-    [0, "rgb(166,206,227)"],
-    [0.25, "rgb(31,120,180)"],
-    [0.45, "rgb(178,223,138)"],
-    [0.65, "rgb(51,160,44)"],
-    [0.85, "rgb(251,154,153)"],
-    [1, "rgb(227,26,28)"],
-  ];
+  const [colorscaleN, setColorscaleN] = useState<[number, string][]>(JSON.parse(colorscale));
 
   const valuedColorScale: ValuedColorscale =
-    useMemo(() => new ValuedColorscale(colorscale, startN, endN, sizeN), [colorscale, startN, endN, sizeN]);
+    useMemo(() => new ValuedColorscale(colorscaleN, startN, endN, sizeN), [colorscaleN, startN, endN, sizeN]);
 
   const [deltaStartN, setDeltaStartN] = useState(Number.parseInt(deltaStart));
   const [deltaEndN, setDeltaEndN] = useState(Number.parseInt(deltaEnd));
@@ -41,6 +43,7 @@ export const App: React.FC = () => {
     setStartN(_start <= _end ? _start : _end);
     setEndN(_start <= _end ? _end : _start);
     setSizeN(_size);
+    setColorscaleN(JSON.parse(colorscale));
   };
 
   /** 変換ボタンをクリックした際の処理 */
@@ -71,6 +74,13 @@ export const App: React.FC = () => {
         label="size"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+      />
+      <TextField
+        value={colorscale}
+        onChange={e => setColorscale(e.target.value)}
+        label="colorscale"
+        variant="standard"
+        multiline
       />
       <Button variant="contained" onClick={handleClickCalcButton}>描画</Button>
     </Stack>
@@ -116,6 +126,12 @@ export const App: React.FC = () => {
         InputProps={{
           readOnly: true,
         }}
+      />
+      <TextField
+        value={JSON.stringify(newValuedColorScale.colorscale.map(([l, c]) => [l, c.rgb().string()]), undefined, 2)}
+        label="colorscale"
+        variant="standard"
+        multiline
       />
     </Stack>
     <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />

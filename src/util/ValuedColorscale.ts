@@ -55,7 +55,7 @@ function weightedMean(base: Color, other: Color, baseWeight: number): Color {
 }
 
 class ValuedColorscale {
-  private readonly colorscale: [number, Color][];
+  readonly colorscale: [number, Color][];
   readonly start: number;
   readonly end: number;
   readonly size: number;
