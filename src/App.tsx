@@ -19,40 +19,49 @@ export const App: React.FC = () => {
   const [reversescale, setReversescale] = useState(false);
   const [deltaStart, setDeltaStart] = useState("1");
   const [deltaEnd, setDeltaEnd] = useState("1");
-  const [colorscale, setColorscale] = useState(JSON.stringify(defaultColorscale))
+  const [colorscale, setColorscale] = useState(() => JSON.stringify(defaultColorscale))
 
   const [reversescaleN, setReversescaleN] = useState(reversescale);
-  const [startN, setStartN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(start) : Number.parseFloat(end));
-  const [endN, setEndN] = useState(Number.parseFloat(start) <= Number.parseFloat(end) ? Number.parseFloat(end) : Number.parseFloat(start));
-  const [sizeN, setSizeN] = useState(Number.parseFloat(size));
-  const [colorscaleN, setColorscaleN] = useState<[number, string][]>(JSON.parse(colorscale));
+  const [startN, setStartN] = useState(() => parseStart(start) <= parseEnd(end) ? parseStart(start) : parseEnd(end));
+  const [endN, setEndN] = useState(() => parseStart(start) <= parseEnd(end) ? parseEnd(end) : parseStart(start));
+  const [sizeN, setSizeN] = useState(() => parseSize(size));
+  const [colorscaleN, setColorscaleN] = useState<[number, string][]>(() => parseJsonOrUndefined(colorscale));
 
   const valuedColorScale: ValuedColorscale =
     useMemo(() => new ValuedColorscale(colorscaleN, startN, endN, sizeN, reversescaleN), [colorscaleN, startN, endN, sizeN, reversescaleN]);
 
-  const [deltaStartN, setDeltaStartN] = useState(Number.parseInt(deltaStart));
-  const [deltaEndN, setDeltaEndN] = useState(Number.parseInt(deltaEnd));
+  const [deltaStartN, setDeltaStartN] = useState(() => parseDeltaStart(deltaStart));
+  const [deltaEndN, setDeltaEndN] = useState(() => parseDeltaEnd(deltaEnd));
 
   const newValuedColorScale: ValuedColorscale =
     useMemo(() => valuedColorScale.subsetByContourIndex(deltaStartN, valuedColorScale.contourValues.length - 1 - deltaEndN), [valuedColorScale, deltaStartN, deltaEndN]);
 
+  /** 描画のパラメータの変更の有無 */
+  const calcParamChanged = parseStart(start) !== startN || parseEnd(end) !== endN || parseSize(size) !== sizeN || JSON.stringify(parseJsonOrUndefined(colorscale)) !== JSON.stringify(colorscaleN) || reversescale !== reversescaleN;
+
+  /** 変換のパラメータの変更の有無 */
+  const transParamChanged = parseDeltaStart(deltaStart) !== deltaStartN || parseDeltaEnd(deltaEnd) !== deltaEndN;
+
   /** 描画ボタンをクリックした際の処理 */
   const handleClickCalcButton = () => {
-    const _start = Number.parseFloat(start);
-    const _end = Number.parseFloat(end);
-    const _size = Number.parseFloat(size);
+    const _start = parseStart(start);
+    const _end = parseEnd(end);
+    const _size = parseSize(size);
 
     setStartN(_start <= _end ? _start : _end);
     setEndN(_start <= _end ? _end : _start);
     setSizeN(_size);
     setColorscaleN(JSON.parse(colorscale));
     setReversescaleN(reversescale);
+
+    setDeltaStartN(parseDeltaStart(deltaStart));
+    setDeltaEndN(parseDeltaEnd(deltaEnd));
   };
 
   /** 変換ボタンをクリックした際の処理 */
   const handleClickTransButton = () => {
-    setDeltaStartN(Number.parseInt(deltaStart));
-    setDeltaEndN(Number.parseInt(deltaEnd));
+    setDeltaStartN(parseDeltaStart(deltaStart));
+    setDeltaEndN(parseDeltaEnd(deltaEnd));
   };
 
   return <Stack direction="row" spacing={1} sx={{ height: "600px" }}>
@@ -89,7 +98,7 @@ export const App: React.FC = () => {
             rows={8}
           />
           <FormControlLabel control={<Checkbox checked={reversescale} onChange={e => setReversescale(e.target.checked)} />} label="reversescale" />
-          <Button variant="contained" onClick={handleClickCalcButton}>{"(1) 変換前の設定を反映"}</Button>
+          <Button variant={calcParamChanged ? "contained" : "outlined"} onClick={handleClickCalcButton}>{"(1) 変換前の設定を反映"}</Button>
         </Stack>
         <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.contourColors().map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
       </Stack>
@@ -109,7 +118,7 @@ export const App: React.FC = () => {
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
       />
-      <Button variant="contained" onClick={handleClickTransButton}>{"(2) 変換"}</Button>
+      <Button variant={transParamChanged ? "contained" : "outlined"} onClick={handleClickTransButton}>{"(2) 変換"}</Button>
     </Stack>
     <Paper elevation={3} sx={{ flex: 1, padding: "1em" }}>
       <Stack direction="row" spacing={1} sx={{ height: "100%" }}>
@@ -161,4 +170,32 @@ export const App: React.FC = () => {
       </Stack>
     </Paper>
   </Stack>
+}
+
+function parseStart(value: string): number {
+  return Number.parseFloat(value);
+}
+
+function parseEnd(value: string): number {
+  return Number.parseFloat(value);
+}
+
+function parseSize(value: string): number {
+  return Number.parseFloat(value);
+}
+
+function parseJsonOrUndefined(value: string): any {
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return undefined;
+  }
+}
+
+function parseDeltaStart(value: string): number {
+  return Number.parseInt(value);
+}
+
+function parseDeltaEnd(value: string): number {
+  return Number.parseInt(value);
 }
