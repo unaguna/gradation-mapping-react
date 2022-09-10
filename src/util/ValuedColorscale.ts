@@ -56,23 +56,30 @@ function weightedMean(base: Color, other: Color, baseWeight: number): Color {
 
 class ValuedColorscale {
   readonly colorscale: [number, Color][];
+  /** colorscaleと同じ。ただし、reversescale である場合は colorscale を反転したものになる。 */
+  private readonly colorscaleFixed: [number, Color][];
   readonly start: number;
   readonly end: number;
   readonly size: number;
+  readonly reversescale: boolean;
   /** 等値線の値。昇順。 */
   readonly contourValues: number[];
   /** 使用するすべての色を明示するcolorscale */
   readonly fullColorscale: [number, Color][];
 
-  constructor(colorscale: ([number, string][]) | ([number, Color][]), start: number, end: number, size: number) {
+  constructor(colorscale: ([number, string][]) | ([number, Color][]), start: number, end: number, size: number, reversescale: boolean) {
     this.colorscale = colorscale.map(([level, color]) => [level, Color(color)]);
+    this.colorscaleFixed = reversescale
+      ? this.colorscale.map<[number, Color]>(([level, color]) => [1 - level, color]).reverse()
+      : this.colorscale;
     this.start = start;
     this.end = end;
     this.size = size;
+    this.reversescale = reversescale;
 
     this.contourValues = ValuedColorscale.calcContourValues(start, end, size);
     const colorBalance = ValuedColorscale.calcColorBalance(this.contourValues);
-    this.fullColorscale = ValuedColorscale.calcFullColorscale(this.colorscale, colorBalance);
+    this.fullColorscale = ValuedColorscale.calcFullColorscale(this.colorscaleFixed, colorBalance);
   }
 
   /**
@@ -81,14 +88,9 @@ class ValuedColorscale {
    * @param reverse trueの場合、順序を反転する
    * @returns 各等値線間を塗る色からなる配列
    */
-  contourColors(reverse?: boolean): Color[] {
+  contourColors(): Color[] {
     const colors = this.fullColorscale.map(([_, c]) => c);
-
-    if (reverse) {
-      return colors.reverse();
-    } else {
-      return colors;
-    }
+    return colors;
   }
 
   subsetByContourIndex(startIndex: number, endIndex: number): ValuedColorscale {
@@ -105,7 +107,7 @@ class ValuedColorscale {
     const newFullColorscaleLength = 2 + endIndex - startIndex;
 
     const newColorscaleInner: [number, Color][] = startIndex !== endIndex
-      ? this.colorscale
+      ? this.colorscaleFixed
         .map<[number, Color]>(([level, c]) => [(level * (this.fullColorscale.length - 1) - startIndex) / (newFullColorscaleLength - 1), c])
         .filter(([level, _]) => 0 < level && level < 1)
       : [];
@@ -121,9 +123,12 @@ class ValuedColorscale {
         ? [1.0, this.fullColorscale[this.contourValues.length][1]]
         : [1.0, this.fullColorscale[endIndex + 1][1]];
 
-    const newColorscale: [number, Color][] = [startEdgeColor, ...newColorscaleInner, endEdgeColor];
+    const newColorscaleFixed: [number, Color][] = [startEdgeColor, ...newColorscaleInner, endEdgeColor];
+    const newColorscale: [number, Color][] = this.reversescale
+      ? newColorscaleFixed.map<[number, Color]>(([level, color]) => [1 - level, color]).reverse()
+      : newColorscaleFixed;
 
-    return new ValuedColorscale(newColorscale, start, end, this.size);
+    return new ValuedColorscale(newColorscale, start, end, this.size, this.reversescale);
   }
 
   private static calcContourValues(start: number, end: number, size: number): number[] {

@@ -28,7 +28,7 @@ export const App: React.FC = () => {
   const [colorscaleN, setColorscaleN] = useState<[number, string][]>(JSON.parse(colorscale));
 
   const valuedColorScale: ValuedColorscale =
-    useMemo(() => new ValuedColorscale(colorscaleN, startN, endN, sizeN), [colorscaleN, startN, endN, sizeN]);
+    useMemo(() => new ValuedColorscale(colorscaleN, startN, endN, sizeN, reversescaleN), [colorscaleN, startN, endN, sizeN, reversescaleN]);
 
   const [deltaStartN, setDeltaStartN] = useState(Number.parseInt(deltaStart));
   const [deltaEndN, setDeltaEndN] = useState(Number.parseInt(deltaEnd));
@@ -91,7 +91,7 @@ export const App: React.FC = () => {
           <FormControlLabel control={<Checkbox checked={reversescale} onChange={e => setReversescale(e.target.checked)} />} label="reversescale" />
           <Button variant="contained" onClick={handleClickCalcButton}>{"(1) 変換前の設定を反映"}</Button>
         </Stack>
-        <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.contourColors(reversescaleN).map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+        <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.contourColors().map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
       </Stack>
     </Paper>
     <Stack direction="column">
@@ -149,7 +149,7 @@ export const App: React.FC = () => {
             rows={8}
           />
           <TextField
-            value={String(reversescaleN)}
+            value={String(newValuedColorScale.reversescale)}
             label="reversescale"
             variant="standard"
             InputProps={{
@@ -157,7 +157,7 @@ export const App: React.FC = () => {
             }}
           />
         </Stack>
-        <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.contourColors(reversescaleN).map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+        <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.contourColors().map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
       </Stack>
     </Paper>
   </Stack>
