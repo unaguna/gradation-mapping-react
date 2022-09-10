@@ -57,9 +57,11 @@ function weightedMean(base: Color, other: Color, baseWeight: number): Color {
 }
 
 export const App: React.FC = () => {
-  const start = 2;
-  const end = 18;
+  const start_ = 2;
+  const end_ = 18;
   const size = 2;
+  const start = start_ <= end_ ? start_ : end_;
+  const end = start_ <= end_ ? end_ : start_;
   const colorscale: [number, string][] = [
     [0, "rgb(166,206,227)"],
     [0.25, "rgb(31,120,180)"],
