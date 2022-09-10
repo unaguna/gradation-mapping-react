@@ -21,7 +21,7 @@ const Colorbar: React.FC<ColorbarProps> = (props) => {
     "& .colorbar__value": {
       display: "block",
       position: "absolute",
-      top: "-1ex",
+      bottom: "-1ex",
       right: 0,
     },
   }), [sx_])
@@ -29,7 +29,7 @@ const Colorbar: React.FC<ColorbarProps> = (props) => {
   const values = [null, ...values_];
 
   return (
-    <Stack direction="column" sx={sx}>
+    <Stack direction="column-reverse" sx={sx}>
       {colors.map(({ key, color: color_, size }, i) => {
         const color = typeof color_ === "string" ? color_ : color_.string();
         return (<div
