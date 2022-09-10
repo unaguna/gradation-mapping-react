@@ -1,4 +1,4 @@
-import { Button, Stack, TextField } from '@mui/material';
+import { Button, Paper, Stack, TextField } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import Colorbar from './component/Colorbar';
 import ValuedColorscale from './util/ValuedColorscale';
@@ -52,39 +52,44 @@ export const App: React.FC = () => {
     setDeltaEndN(Number.parseInt(deltaEnd));
   };
 
-  return <Stack direction="row" spacing={1}>
-    <Stack direction="column">
-      <TextField
-        value={end}
-        onChange={e => setEnd(e.target.value)}
-        label="end"
-        variant="standard"
-        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
-      />
-      <TextField
-        value={start}
-        onChange={e => setStart(e.target.value)}
-        label="start"
-        variant="standard"
-        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
-      />
-      <TextField
-        value={size}
-        onChange={e => setSize(e.target.value)}
-        label="size"
-        variant="standard"
-        inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
-      />
-      <TextField
-        value={colorscale}
-        onChange={e => setColorscale(e.target.value)}
-        label="colorscale"
-        variant="standard"
-        multiline
-      />
-      <Button variant="contained" onClick={handleClickCalcButton}>描画</Button>
-    </Stack>
-    <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
+  return <Stack direction="row" spacing={1} sx={{ height: "600px" }}>
+    <Paper elevation={3} sx={{ flex: 1, padding: "1em" }}>
+      <Stack direction="row" spacing={1} sx={{ height: "100%" }}>
+        <Stack direction="column" spacing={1} sx={{ flex: 1 }}>
+          <TextField
+            value={end}
+            onChange={e => setEnd(e.target.value)}
+            label="end"
+            variant="standard"
+            inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+          />
+          <TextField
+            value={start}
+            onChange={e => setStart(e.target.value)}
+            label="start"
+            variant="standard"
+            inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+          />
+          <TextField
+            value={size}
+            onChange={e => setSize(e.target.value)}
+            label="size"
+            variant="standard"
+            inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+          />
+          <TextField
+            value={colorscale}
+            onChange={e => setColorscale(e.target.value)}
+            label="colorscale"
+            variant="standard"
+            multiline
+            rows={8}
+          />
+          <Button variant="contained" onClick={handleClickCalcButton}>{"(1) 変換前の設定を反映"}</Button>
+        </Stack>
+        <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+      </Stack>
+    </Paper>
     <Stack direction="column">
       <TextField
         value={deltaEnd}
@@ -100,40 +105,48 @@ export const App: React.FC = () => {
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
       />
-      <Button variant="contained" onClick={handleClickTransButton}>変換</Button>
+      <Button variant="contained" onClick={handleClickTransButton}>{"(2) 変換"}</Button>
     </Stack>
-    <Stack direction="column">
-      <TextField
-        value={newValuedColorScale.end}
-        label="end"
-        variant="standard"
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-      <TextField
-        value={newValuedColorScale.start}
-        label="start"
-        variant="standard"
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-      <TextField
-        value={newValuedColorScale.size}
-        label="size"
-        variant="standard"
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-      <TextField
-        value={JSON.stringify(newValuedColorScale.colorscale.map(([l, c]) => [l, c.rgb().string()]), undefined, 2)}
-        label="colorscale"
-        variant="standard"
-        multiline
-      />
-    </Stack>
-    <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ flex: 1, height: "600px" }} />
+    <Paper elevation={3} sx={{ flex: 1, padding: "1em" }}>
+      <Stack direction="row" spacing={1} sx={{ height: "100%" }}>
+        <Stack direction="column" spacing={1} sx={{ flex: 1 }}>
+          <TextField
+            value={newValuedColorScale.end}
+            label="end"
+            variant="standard"
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            value={newValuedColorScale.start}
+            label="start"
+            variant="standard"
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            value={newValuedColorScale.size}
+            label="size"
+            variant="standard"
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            value={JSON.stringify(newValuedColorScale.colorscale.map(([l, c]) => [l, c.rgb().string()]), undefined, 2)}
+            label="colorscale"
+            variant="standard"
+            InputProps={{
+              readOnly: true,
+            }}
+            multiline
+            rows={8}
+          />
+        </Stack>
+        <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+      </Stack>
+    </Paper>
   </Stack>
 }

@@ -19,6 +19,7 @@ const Colorbar: React.FC<ColorbarProps> = (props) => {
 
   const sx: SxProps = useMemo(() => Object.assign({}, sx_, {
     "& .colorbar__value": {
+      backgroundColor: "rgba(255,255,255,0.5)",
       display: "block",
       position: "absolute",
       bottom: "-1ex",
