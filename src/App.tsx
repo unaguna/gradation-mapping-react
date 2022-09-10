@@ -99,6 +99,6 @@ export const App: React.FC = () => {
   }, colorBalance);
 
   return <div>
-    <Colorbar colors={colors.map(([_, c]) => ({ key: c.rgb().string(), color: c.rgb().string(), size: 1 }))} sx={{ height: "600px" }} />
+    <Colorbar colors={colors.map(([_, c]) => ({ color: c, size: 1 }))} sx={{ height: "600px" }} />
   </div>
 }
