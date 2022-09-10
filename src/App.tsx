@@ -98,14 +98,14 @@ export const App: React.FC = () => {
       <TextField
         value={deltaEnd}
         onChange={e => setDeltaEnd(e.target.value)}
-        label="end側をnメモリ減らす"
+        label="上側をnメモリ減らす"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
       />
       <TextField
         value={deltaStart}
         onChange={e => setDeltaStart(e.target.value)}
-        label="start側をnメモリ減らす"
+        label="下側をnメモリ減らす"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
       />
