@@ -146,7 +146,10 @@ export const App: React.FC = () => {
           helperText={deltaEndValidationMessage}
           label="上側をnメモリ減らす"
           variant="standard"
-          inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
+          type="number"
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
         <TextField
           value={deltaStart}
@@ -155,7 +158,10 @@ export const App: React.FC = () => {
           helperText={deltaStartValidationMessage}
           label="下側をnメモリ減らす"
           variant="standard"
-          inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
+          type="number"
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
         <Button
           variant={transParamChanged ? "contained" : "outlined"}
