@@ -1,12 +1,13 @@
-import { Stack } from '@mui/material';
+import { Stack, Tooltip } from '@mui/material';
 import { SxProps } from '@mui/material/styles';
 import Color from 'color';
 import React, { useMemo } from 'react';
 
 
 interface ColorbarProps {
-  colors: { key?: string, color: string | Color, size: number }[];
+  colors: { key?: string, level: number, color: string | Color }[];
   values: (string | number)[];
+  edgeSize?: number;
   sx?: SxProps;
 }
 
@@ -15,6 +16,7 @@ const Colorbar: React.FC<ColorbarProps> = (props) => {
     colors,
     values: values_,
     sx: sx_,
+    edgeSize = 1,
   } = props;
 
   const sx: SxProps = useMemo(() => Object.assign({}, sx_, {
@@ -28,20 +30,26 @@ const Colorbar: React.FC<ColorbarProps> = (props) => {
   }), [sx_])
 
   const values = [null, ...values_];
+  const size = 1.0;
 
   return (
     <Stack direction="column-reverse" sx={sx}>
-      {colors.map(({ key, color: color_, size }, i) => {
+      {colors.map(({ key, color: color_, level }, i) => {
         const color = typeof color_ === "string" ? color_ : color_.string();
-        return (<div
+        return (<Tooltip
+          title={`${level}, ${color}`}
+          placement="left"
           key={key ?? `color-${i}`}
-          style={{
-            position: "relative",
-            backgroundColor: color,
-            flex: size,
-          }}>
-          <span className="colorbar__value">{values[i]}</span>
-        </div>);
+        >
+          <div
+            style={{
+              position: "relative",
+              backgroundColor: color,
+              flex: (i === 0 || i === colors.length - 1) ? edgeSize * size : size,
+            }}>
+            <span className="colorbar__value">{values[i]}</span>
+          </div>
+        </Tooltip>);
       })}
     </Stack>
   );
