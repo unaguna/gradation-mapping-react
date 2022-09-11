@@ -1,6 +1,7 @@
 import { Button, Checkbox, FormControlLabel, Paper, Stack, TextField } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import Colorbar from './component/Colorbar';
+import { validateColorscaleJson, validateInteger, validateNumber, validatePositiveNumber } from './util/validation';
 import ValuedColorscale from './util/ValuedColorscale';
 
 const defaultColorscale: [number, string][] = [
@@ -42,6 +43,26 @@ export const App: React.FC = () => {
   /** 変換のパラメータの変更の有無 */
   const transParamChanged = parseDeltaStart(deltaStart) !== deltaStartN || parseDeltaEnd(deltaEnd) !== deltaEndN;
 
+  // 入力値をバリデーション
+  const startValidationMessage = useMemo(() => validateNumber(start, true), [start]);
+  const endValidationMessage = useMemo(() => validateNumber(end, true), [end]);
+  const sizeValidationMessage = useMemo(() => validatePositiveNumber(size, true), [size]);
+  const colorscaleValidationMessage = useMemo(() => validateColorscaleJson(colorscale, true), [colorscale]);
+  const deltaStartValidationMessage = useMemo(() => validateInteger(deltaStart, true), [deltaStart]);
+  const deltaEndValidationMessage = useMemo(() => validateInteger(deltaEnd, true), [deltaEnd]);
+
+  /** 入力されている描画のパラメータが正しいか否か */
+  const calcParamValid =
+    startValidationMessage == null
+    && endValidationMessage == null
+    && sizeValidationMessage == null
+    && colorscaleValidationMessage == null;
+
+  /** 入力されている変換のパラメータが正しいか否か */
+  const transParamValid =
+    deltaStartValidationMessage == null
+    && deltaEndValidationMessage == null;
+
   /** 描画ボタンをクリックした際の処理 */
   const handleClickCalcButton = () => {
     const _start = parseStart(start);
@@ -68,20 +89,26 @@ export const App: React.FC = () => {
           <TextField
             value={end}
             onChange={e => setEnd(e.target.value)}
+            error={endValidationMessage != null}
+            helperText={endValidationMessage}
             label="end"
             variant="standard"
-            inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+            inputProps={{ inputMode: 'numeric' }}
           />
           <TextField
             value={start}
             onChange={e => setStart(e.target.value)}
+            error={startValidationMessage != null}
+            helperText={startValidationMessage}
             label="start"
             variant="standard"
-            inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
+            inputProps={{ inputMode: 'numeric' }}
           />
           <TextField
             value={size}
             onChange={e => setSize(e.target.value)}
+            error={sizeValidationMessage != null}
+            helperText={sizeValidationMessage}
             label="size"
             variant="standard"
             inputProps={{ inputMode: 'numeric', pattern: '-?[0-9\.]*' }}
@@ -89,21 +116,29 @@ export const App: React.FC = () => {
           <TextField
             value={colorscale}
             onChange={e => setColorscale(e.target.value)}
+            error={colorscaleValidationMessage != null}
+            helperText={colorscaleValidationMessage}
             label="colorscale"
             variant="standard"
             multiline
             rows={8}
           />
           <FormControlLabel control={<Checkbox checked={reversescale} onChange={e => setReversescale(e.target.checked)} />} label="reversescale" />
-          <Button variant={calcParamChanged ? "contained" : "outlined"} onClick={handleClickCalcButton}>{"(1) 変換前の設定を反映"}</Button>
+          <Button
+            variant={calcParamChanged ? "contained" : "outlined"}
+            onClick={handleClickCalcButton}
+            disabled={!calcParamValid}
+          >{"(1) 変換前の設定を反映"}</Button>
         </Stack>
         <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.contourColors().map(c => ({ color: c, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
       </Stack>
     </Paper>
-    <Stack direction="column">
+    <Stack direction="column" spacing={1}>
       <TextField
         value={deltaEnd}
         onChange={e => setDeltaEnd(e.target.value)}
+        error={deltaEndValidationMessage != null}
+        helperText={deltaEndValidationMessage}
         label="上側をnメモリ減らす"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
@@ -111,11 +146,17 @@ export const App: React.FC = () => {
       <TextField
         value={deltaStart}
         onChange={e => setDeltaStart(e.target.value)}
+        error={deltaStartValidationMessage != null}
+        helperText={deltaStartValidationMessage}
         label="下側をnメモリ減らす"
         variant="standard"
         inputProps={{ inputMode: 'numeric', pattern: '-?[0-9]*' }}
       />
-      <Button variant={transParamChanged ? "contained" : "outlined"} onClick={handleClickTransButton}>{"(2) 変換"}</Button>
+      <Button
+        variant={transParamChanged ? "contained" : "outlined"}
+        onClick={handleClickTransButton}
+        disabled={!transParamValid}
+      >{"(2) 変換"}</Button>
     </Stack>
     <Paper elevation={3} sx={{ flex: 1, padding: "1em" }}>
       <Stack direction="row" spacing={1} sx={{ height: "100%" }}>
