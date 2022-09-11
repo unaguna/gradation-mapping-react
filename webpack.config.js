@@ -4,8 +4,8 @@ module.exports = {
   mode: 'development',
   entry: './src/index.tsx',
   output: {
-    path: path.join(__dirname, 'dist/js'),
-    filename: 'main.js',
+    path: path.join(__dirname, 'dist'),
+    filename: 'js/main.js',
   },
   module: {
     rules: [
@@ -32,7 +32,7 @@ module.exports = {
   },
   devServer: {
     static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: path.join(__dirname, 'public'),
     },
     port: 3000,
   },
