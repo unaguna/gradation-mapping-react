@@ -130,7 +130,11 @@ export const App: React.FC = () => {
             disabled={!calcParamValid}
           >{"(1) 変換前の設定を反映"}</Button>
         </Stack>
-        <Colorbar values={valuedColorScale.contourValues} colors={valuedColorScale.fullColorscale.map(([l, c]) => ({ color: c, level: l, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+        <Colorbar
+          values={valuedColorScale.contourValues}
+          colors={valuedColorScale.fullColorscale.map(([l, c]) => ({ color: c, level: l }))}
+          edgeSize={0.6}
+          sx={{ width: "6rem", height: "100%" }} />
       </Stack>
     </Paper>
     <Stack direction="column" spacing={1}>
@@ -204,7 +208,11 @@ export const App: React.FC = () => {
             }}
           />
         </Stack>
-        <Colorbar values={newValuedColorScale.contourValues} colors={newValuedColorScale.fullColorscale.map(([l, c]) => ({ color: c, level: l, size: 1 }))} sx={{ width: "6rem", height: "100%" }} />
+        <Colorbar
+          values={newValuedColorScale.contourValues}
+          colors={newValuedColorScale.fullColorscale.map(([l, c]) => ({ color: c, level: l }))}
+          edgeSize={0.6}
+          sx={{ width: "6rem", height: "100%" }} />
       </Stack>
     </Paper>
   </Stack>
